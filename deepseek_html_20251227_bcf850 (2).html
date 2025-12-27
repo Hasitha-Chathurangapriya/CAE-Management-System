@@ -1,0 +1,2641 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CAE Management System</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        /* ===== RESET ===== */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', system-ui, sans-serif;
+        }
+
+        :root {
+            --primary: #667eea;
+            --secondary: #764ba2;
+            --success: #10b981;
+            --warning: #f59e0b;
+            --danger: #ef4444;
+            --info: #3b82f6;
+            --light: #f8fafc;
+            --dark: #1e293b;
+            --gray: #64748b;
+            --border: #e2e8f0;
+        }
+
+        body {
+            background: #f1f5f9;
+            min-height: 100vh;
+        }
+
+        .hidden { 
+            display: none !important; 
+        }
+
+        /* ===== LOGIN PAGE ===== */
+        .login-container {
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+        }
+
+        .login-card {
+            background: white;
+            border-radius: 20px;
+            padding: 40px;
+            width: 100%;
+            max-width: 450px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+        }
+
+        .logo {
+            width: 80px;
+            height: 80px;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            border-radius: 50%;
+            margin: 0 auto 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 28px;
+            font-weight: bold;
+        }
+
+        .login-title {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .login-title h1 {
+            color: var(--dark);
+            margin-bottom: 10px;
+            font-size: 1.8rem;
+        }
+
+        .login-title p {
+            color: var(--gray);
+        }
+
+        .role-tabs {
+            display: flex;
+            margin-bottom: 25px;
+            border-radius: 10px;
+            overflow: hidden;
+            border: 2px solid var(--primary);
+        }
+
+        .role-tab {
+            flex: 1;
+            padding: 12px;
+            background: white;
+            border: none;
+            cursor: pointer;
+            font-weight: 600;
+            color: var(--primary);
+            transition: all 0.3s;
+        }
+
+        .role-tab.active {
+            background: var(--primary);
+            color: white;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: var(--dark);
+        }
+
+        .form-control {
+            width: 100%;
+            padding: 14px;
+            border: 2px solid var(--border);
+            border-radius: 10px;
+            font-size: 1rem;
+            transition: all 0.3s;
+        }
+
+        .form-control:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+
+        .btn {
+            padding: 14px;
+            border: none;
+            border-radius: 10px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            width: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            color: white;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 7px 14px rgba(102, 126, 234, 0.2);
+        }
+
+        .btn-sm {
+            padding: 8px 16px;
+            font-size: 0.9rem;
+            width: auto;
+        }
+
+        .btn-danger {
+            background: linear-gradient(135deg, var(--danger), #dc2626);
+            color: white;
+        }
+
+        .btn-info {
+            background: linear-gradient(135deg, var(--info), #1d4ed8);
+            color: white;
+        }
+
+        .btn-warning {
+            background: linear-gradient(135deg, var(--warning), #d97706);
+            color: white;
+        }
+
+        .alert {
+            padding: 12px 16px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            border-left: 4px solid;
+        }
+
+        .alert-error {
+            background: #fee2e2;
+            color: #991b1b;
+            border-left-color: var(--danger);
+        }
+
+        .alert-success {
+            background: #d1fae5;
+            color: #065f46;
+            border-left-color: var(--success);
+        }
+
+        .alert-info {
+            background: #dbeafe;
+            color: #1e40af;
+            border-left-color: var(--info);
+        }
+
+        .login-info {
+            margin-top: 30px;
+            padding-top: 20px;
+            border-top: 1px solid var(--border);
+            font-size: 0.9rem;
+            color: var(--gray);
+        }
+
+        .login-info ul {
+            list-style: none;
+            padding: 0;
+        }
+
+        .login-info li {
+            margin-bottom: 5px;
+            padding-left: 20px;
+            position: relative;
+        }
+
+        .login-info li:before {
+            content: "•";
+            color: var(--primary);
+            position: absolute;
+            left: 0;
+        }
+
+        /* ===== DASHBOARDS ===== */
+        .dashboard {
+            display: none;
+            min-height: 100vh;
+        }
+
+        /* Header */
+        .header {
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            color: white;
+            padding: 20px 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 4px 20px rgba(102, 126, 234, 0.3);
+        }
+
+        .header-left h1 {
+            font-size: 1.6rem;
+            margin-bottom: 5px;
+        }
+
+        .header-left p {
+            opacity: 0.9;
+            font-size: 0.9rem;
+        }
+
+        .header-right {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .user-avatar {
+            width: 40px;
+            height: 40px;
+            background: white;
+            color: var(--primary);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+        }
+
+        .logout-btn {
+            background: rgba(255,255,255,0.1);
+            border: 1px solid rgba(255,255,255,0.2);
+            color: white;
+            padding: 8px 20px;
+            border-radius: 20px;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            text-decoration: none;
+        }
+
+        .logout-btn:hover {
+            background: rgba(255,255,255,0.2);
+        }
+
+        /* Main Content */
+        .main-content {
+            padding: 30px;
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        /* Tabs */
+        .tabs {
+            display: flex;
+            gap: 5px;
+            margin-bottom: 25px;
+            border-bottom: 2px solid var(--border);
+            flex-wrap: wrap;
+        }
+
+        .tab {
+            padding: 12px 25px;
+            background: none;
+            border: none;
+            cursor: pointer;
+            font-weight: 600;
+            color: var(--gray);
+            border-bottom: 3px solid transparent;
+            transition: all 0.3s;
+        }
+
+        .tab:hover {
+            color: var(--primary);
+        }
+
+        .tab.active {
+            color: var(--primary);
+            border-bottom-color: var(--primary);
+        }
+
+        .tab-content {
+            display: none;
+            animation: fadeIn 0.3s;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        /* Content Cards */
+        .content-card {
+            background: white;
+            border-radius: 15px;
+            padding: 30px;
+            margin-bottom: 30px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.05);
+        }
+
+        .card-title {
+            font-size: 1.3rem;
+            color: var(--dark);
+            margin-bottom: 20px;
+            padding-bottom: 15px;
+            border-bottom: 2px solid var(--border);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 10px;
+        }
+
+        .card-title-actions {
+            display: flex;
+            gap: 10px;
+        }
+
+        /* Stats Grid */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .stat-card {
+            background: white;
+            padding: 25px;
+            border-radius: 15px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.05);
+            text-align: center;
+            transition: transform 0.3s;
+        }
+
+        .stat-card:hover {
+            transform: translateY(-5px);
+        }
+
+        .stat-icon {
+            width: 50px;
+            height: 50px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 15px;
+            font-size: 20px;
+        }
+
+        .stat-icon.users { background: #dbeafe; color: var(--primary); }
+        .stat-icon.projects { background: #d1fae5; color: var(--success); }
+        .stat-icon.commission { background: #fef3c7; color: var(--warning); }
+        .stat-icon.allowance { background: #f3e8ff; color: #8b5cf6; }
+        .stat-icon.clients { background: #ffe4e6; color: #be123c; }
+        .stat-icon.revenue { background: #dcfce7; color: #16a34a; }
+
+        .stat-value {
+            font-size: 2rem;
+            font-weight: 800;
+            margin: 10px 0;
+            color: var(--dark);
+        }
+
+        .stat-label {
+            color: var(--gray);
+            font-size: 0.9rem;
+        }
+
+        /* Forms */
+        .form-row {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin-bottom: 20px;
+        }
+
+        .btn-success {
+            background: linear-gradient(135deg, var(--success), #059669);
+            color: white;
+        }
+
+        .btn-success:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 7px 14px rgba(16, 185, 129, 0.2);
+        }
+
+        /* Tables */
+        .data-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+
+        .data-table th {
+            background: var(--light);
+            padding: 15px;
+            text-align: left;
+            font-weight: 600;
+            color: var(--dark);
+            border-bottom: 2px solid var(--border);
+        }
+
+        .data-table td {
+            padding: 15px;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .data-table tr:hover {
+            background: #f8fafc;
+        }
+
+        /* Allowance Badge */
+        .allowance-badge {
+            background: linear-gradient(135deg, var(--warning), #d97706);
+            color: white;
+            padding: 6px 15px;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .status-badge {
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .status-active { background: #d1fae5; color: #065f46; }
+        .status-pending { background: #fef3c7; color: #92400e; }
+        .status-completed { background: #dbeafe; color: #1e40af; }
+
+        /* Loading */
+        .loading {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 3px solid #f3f3f3;
+            border-top: 3px solid var(--primary);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        /* Search and Filter */
+        .search-filter {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+        }
+
+        .search-box {
+            flex: 1;
+            min-width: 250px;
+        }
+
+        .filter-box {
+            width: 200px;
+        }
+
+        /* Modal */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.5);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .modal.active {
+            display: flex;
+        }
+
+        .modal-content {
+            background: white;
+            border-radius: 15px;
+            padding: 30px;
+            width: 90%;
+            max-width: 600px;
+            max-height: 90vh;
+            overflow-y: auto;
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .modal-title {
+            font-size: 1.5rem;
+            color: var(--dark);
+        }
+
+        .modal-close {
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            cursor: pointer;
+            color: var(--gray);
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .login-card {
+                padding: 30px 20px;
+            }
+            
+            .header {
+                flex-direction: column;
+                gap: 15px;
+                text-align: center;
+            }
+            
+            .main-content {
+                padding: 20px;
+            }
+            
+            .tabs {
+                flex-wrap: wrap;
+            }
+            
+            .form-row {
+                grid-template-columns: 1fr;
+            }
+            
+            .search-filter {
+                flex-direction: column;
+            }
+            
+            .card-title {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 15px;
+            }
+            
+            .card-title-actions {
+                width: 100%;
+                justify-content: flex-start;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- ===== LOGIN PAGE ===== -->
+    <div id="loginPage" class="login-container">
+        <div class="login-card">
+            <div class="logo">CAE</div>
+            <div class="login-title">
+                <h1>CAE Management System</h1>
+                <p>Commission & Allowance Tracking</p>
+            </div>
+            
+            <div id="loginError" class="alert alert-error hidden"></div>
+            
+            <div class="role-tabs">
+                <button type="button" class="role-tab active" onclick="switchRole('admin')">
+                    <i class="fas fa-user-shield"></i> Admin
+                </button>
+                <button type="button" class="role-tab" onclick="switchRole('cae')">
+                    <i class="fas fa-user-tie"></i> CAE
+                </button>
+            </div>
+            
+            <form id="loginForm" onsubmit="return login(event)">
+                <div class="form-group" id="usernameGroup">
+                    <label class="form-label" id="usernameLabel">Admin Username</label>
+                    <input type="text" id="username" class="form-control" value="admin">
+                </div>
+                
+                <div class="form-group" id="passwordGroup">
+                    <label class="form-label">Password</label>
+                    <input type="password" id="password" class="form-control" placeholder="Enter password">
+                </div>
+                
+                <div class="form-group hidden" id="caeNumberGroup">
+                    <label class="form-label">CAE Number</label>
+                    <input type="text" id="caeNumber" class="form-control" placeholder="Enter CAE number (e.g., CAE-001)">
+                </div>
+                
+                <button type="submit" class="btn btn-primary">
+                    <i class="fas fa-sign-in-alt"></i> Login to Dashboard
+                </button>
+            </form>
+            
+            <div class="login-info">
+                <strong>Demo Credentials:</strong>
+                <ul>
+                    <li><strong>Admin:</strong> admin / admin123</li>
+                    <li><strong>CAE:</strong> Use CAE number only (e.g., CAE-001)</li>
+                    <li><strong>Rule:</strong> 40% commission, LKR 5,000 for 5 projects/month</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+    
+    <!-- ===== ADMIN DASHBOARD ===== -->
+    <div id="adminDashboard" class="dashboard">
+        <!-- Admin Header -->
+        <header class="header">
+            <div class="header-left">
+                <h1><i class="fas fa-user-shield"></i> Admin Dashboard</h1>
+                <p id="adminWelcome">Welcome, Administrator!</p>
+            </div>
+            <div class="header-right">
+                <div class="user-info">
+                    <div class="user-avatar">A</div>
+                    <div>
+                        <strong>Administrator</strong>
+                        <p>Super Admin</p>
+                    </div>
+                </div>
+                <button type="button" class="logout-btn" onclick="logout()">
+                    <i class="fas fa-sign-out-alt"></i> Logout
+                </button>
+            </div>
+        </header>
+        
+        <!-- Admin Main Content -->
+        <div class="main-content">
+            <!-- Admin Tabs -->
+            <div class="tabs">
+                <button type="button" class="tab active" onclick="showTab('overview')">Dashboard</button>
+                <button type="button" class="tab" onclick="showTab('add-cae')">Add CAE</button>
+                <button type="button" class="tab" onclick="showTab('add-client')">Add Client</button>
+                <button type="button" class="tab" onclick="showTab('clients')">Clients</button>
+                <button type="button" class="tab" onclick="showTab('reports')">Reports</button>
+            </div>
+            
+            <!-- Overview Tab -->
+            <div id="overviewTab" class="tab-content active">
+                <div class="content-card">
+                    <h2 class="card-title"><i class="fas fa-chart-line"></i> System Overview</h2>
+                    
+                    <div class="stats-grid">
+                        <div class="stat-card">
+                            <div class="stat-icon users">
+                                <i class="fas fa-users"></i>
+                            </div>
+                            <div class="stat-value" id="adminTotalCaes">3</div>
+                            <div class="stat-label">Total CAEs</div>
+                        </div>
+                        
+                        <div class="stat-card">
+                            <div class="stat-icon clients">
+                                <i class="fas fa-user-tie"></i>
+                            </div>
+                            <div class="stat-value" id="adminTotalClients">12</div>
+                            <div class="stat-label">Total Clients</div>
+                        </div>
+                        
+                        <div class="stat-card">
+                            <div class="stat-icon projects">
+                                <i class="fas fa-handshake"></i>
+                            </div>
+                            <div class="stat-value" id="adminTotalProjects">15</div>
+                            <div class="stat-label">This Month Projects</div>
+                        </div>
+                        
+                        <div class="stat-card">
+                            <div class="stat-icon commission">
+                                <i class="fas fa-money-bill-wave"></i>
+                            </div>
+                            <div class="stat-value" id="adminTotalCommission">LKR 420,000</div>
+                            <div class="stat-label">Total Commission</div>
+                        </div>
+                        
+                        <div class="stat-card">
+                            <div class="stat-icon allowance">
+                                <i class="fas fa-gift"></i>
+                            </div>
+                            <div class="stat-value" id="adminTotalAllowance">LKR 10,000</div>
+                            <div class="stat-label">Allowances Paid</div>
+                        </div>
+                        
+                        <div class="stat-card">
+                            <div class="stat-icon revenue">
+                                <i class="fas fa-chart-pie"></i>
+                            </div>
+                            <div class="stat-value" id="adminTotalRevenue">LKR 1,050,000</div>
+                            <div class="stat-label">Total Revenue</div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="content-card">
+                    <h2 class="card-title"><i class="fas fa-trophy"></i> Top Performers</h2>
+                    <table class="data-table">
+                        <thead>
+                            <tr>
+                                <th>Rank</th>
+                                <th>CAE</th>
+                                <th>Projects</th>
+                                <th>Commission</th>
+                                <th>Allowance</th>
+                                <th>Performance</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td><span style="color: var(--warning); font-weight: 800;">#1</span></td>
+                                <td><strong>John Doe</strong><br><small>CAE-001</small></td>
+                                <td>8</td>
+                                <td><strong class="text-success">LKR 125,000</strong></td>
+                                <td><span class="allowance-badge">LKR 5,000</span></td>
+                                <td>
+                                    <div style="width: 100%; background: #e2e8f0; height: 8px; border-radius: 4px;">
+                                        <div style="width: 95%; background: var(--success); height: 100%; border-radius: 4px;"></div>
+                                    </div>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td><span style="color: var(--primary); font-weight: 800;">#2</span></td>
+                                <td><strong>Jane Smith</strong><br><small>CAE-002</small></td>
+                                <td>6</td>
+                                <td><strong class="text-success">LKR 98,000</strong></td>
+                                <td><span class="allowance-badge">LKR 5,000</span></td>
+                                <td>
+                                    <div style="width: 100%; background: #e2e8f0; height: 8px; border-radius: 4px;">
+                                        <div style="width: 75%; background: var(--primary); height: 100%; border-radius: 4px;"></div>
+                                    </div>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td><span style="color: var(--success); font-weight: 800;">#3</span></td>
+                                <td><strong>Robert Johnson</strong><br><small>CAE-003</small></td>
+                                <td>5</td>
+                                <td><strong class="text-success">LKR 75,000</strong></td>
+                                <td><span class="allowance-badge">LKR 5,000</span></td>
+                                <td>
+                                    <div style="width: 100%; background: #e2e8f0; height: 8px; border-radius: 4px;">
+                                        <div style="width: 65%; background: var(--warning); height: 100%; border-radius: 4px;"></div>
+                                    </div>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            
+            <!-- Add CAE Tab -->
+            <div id="add-caeTab" class="tab-content">
+                <div class="content-card">
+                    <h2 class="card-title"><i class="fas fa-user-plus"></i> Add New CAE</h2>
+                    
+                    <div id="addCaeResult"></div>
+                    
+                    <form id="addCaeForm" onsubmit="return addCAE(event)">
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label class="form-label">Full Name *</label>
+                                <input type="text" id="caeName" class="form-control" required placeholder="Enter CAE's full name">
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">Phone Number *</label>
+                                <input type="tel" id="caePhone" class="form-control" required placeholder="Enter phone number">
+                            </div>
+                        </div>
+                        
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label class="form-label">Email Address (Optional)</label>
+                                <input type="email" id="caeEmail" class="form-control" placeholder="Enter email address">
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">Address (Optional)</label>
+                                <input type="text" id="caeAddress" class="form-control" placeholder="Enter address">
+                            </div>
+                        </div>
+                        
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label class="form-label">Joining Date *</label>
+                                <input type="date" id="caeJoinDate" class="form-control" required value="">
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">Commission Rate (%) *</label>
+                                <input type="number" id="caeCommissionRate" class="form-control" value="40" min="1" max="100" step="0.1" required>
+                            </div>
+                        </div>
+                        
+                        <button type="submit" class="btn btn-success">
+                            <i class="fas fa-save"></i> Register New CAE
+                        </button>
+                    </form>
+                </div>
+                
+                <div class="content-card">
+                    <h2 class="card-title"><i class="fas fa-users"></i> All CAEs</h2>
+                    <table class="data-table">
+                        <thead>
+                            <tr>
+                                <th>CAE No</th>
+                                <th>Name</th>
+                                <th>Phone</th>
+                                <th>Email</th>
+                                <th>Commission Rate</th>
+                                <th>Join Date</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="caeTableBody">
+                            <tr>
+                                <td><strong>CAE-001</strong></td>
+                                <td>John Doe</td>
+                                <td>077-1234567</td>
+                                <td>john@example.com</td>
+                                <td>40%</td>
+                                <td>2024-01-15</td>
+                                <td>
+                                    <button type="button" class="btn btn-sm btn-info">
+                                        <i class="fas fa-eye"></i>
+                                    </button>
+                                    <button type="button" class="btn btn-sm btn-warning">
+                                        <i class="fas fa-edit"></i>
+                                    </button>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td><strong>CAE-002</strong></td>
+                                <td>Jane Smith</td>
+                                <td>077-2345678</td>
+                                <td>jane@example.com</td>
+                                <td>40%</td>
+                                <td>2024-01-20</td>
+                                <td>
+                                    <button type="button" class="btn btn-sm btn-info">
+                                        <i class="fas fa-eye"></i>
+                                    </button>
+                                    <button type="button" class="btn btn-sm btn-warning">
+                                        <i class="fas fa-edit"></i>
+                                    </button>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td><strong>CAE-003</strong></td>
+                                <td>Robert Johnson</td>
+                                <td>077-3456789</td>
+                                <td>robert@example.com</td>
+                                <td>40%</td>
+                                <td>2024-02-01</td>
+                                <td>
+                                    <button type="button" class="btn btn-sm btn-info">
+                                        <i class="fas fa-eye"></i>
+                                    </button>
+                                    <button type="button" class="btn btn-sm btn-warning">
+                                        <i class="fas fa-edit"></i>
+                                    </button>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            
+            <!-- Add Client Tab -->
+            <div id="add-clientTab" class="tab-content">
+                <div class="content-card">
+                    <h2 class="card-title"><i class="fas fa-user-tie"></i> Add New Client</h2>
+                    
+                    <div id="addClientResult"></div>
+                    
+                    <form id="addClientForm" onsubmit="return addClient(event)">
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label class="form-label">Date *</label>
+                                <input type="date" id="clientDate" class="form-control" required value="">
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">CAE *</label>
+                                <select id="clientCae" class="form-control" required onchange="updateCAECommissionRate()">
+                                    <option value="">Select CAE</option>
+                                    <option value="CAE-001">CAE-001 - John Doe (40%)</option>
+                                    <option value="CAE-002">CAE-002 - Jane Smith (40%)</option>
+                                    <option value="CAE-003">CAE-003 - Robert Johnson (40%)</option>
+                                </select>
+                            </div>
+                        </div>
+                        
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label class="form-label">Client Name *</label>
+                                <input type="text" id="clientName" class="form-control" required placeholder="Enter client name">
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">Client Email</label>
+                                <input type="email" id="clientEmail" class="form-control" placeholder="Enter client email">
+                            </div>
+                        </div>
+                        
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label class="form-label">Client Phone</label>
+                                <input type="tel" id="clientPhone" class="form-control" placeholder="Enter client phone">
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">Client Company</label>
+                                <input type="text" id="clientCompany" class="form-control" placeholder="Enter company name">
+                            </div>
+                        </div>
+                        
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label class="form-label">Project Value (LKR) *</label>
+                                <input type="number" id="projectValue" class="form-control" required placeholder="Enter project value" min="0" step="0.01" oninput="updateCommissionPreview()">
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">Project Status</label>
+                                <select id="projectStatus" class="form-control">
+                                    <option value="active">Active</option>
+                                    <option value="pending">Pending</option>
+                                    <option value="completed" selected>Completed</option>
+                                    <option value="cancelled">Cancelled</option>
+                                </select>
+                            </div>
+                        </div>
+                        
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label class="form-label">Project Type</label>
+                                <select id="projectType" class="form-control">
+                                    <option value="consulting">Consulting</option>
+                                    <option value="development">Development</option>
+                                    <option value="maintenance">Maintenance</option>
+                                    <option value="training">Training</option>
+                                    <option value="other">Other</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">Project Duration (Days)</label>
+                                <input type="number" id="projectDuration" class="form-control" placeholder="Duration in days" min="1">
+                            </div>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label class="form-label">Project Description *</label>
+                            <textarea id="projectDesc" class="form-control" rows="4" required placeholder="Detailed description of the project"></textarea>
+                        </div>
+                        
+                        <div id="commissionPreview" class="alert alert-success" style="display: none;">
+                            <h4><i class="fas fa-calculator"></i> Commission Preview</h4>
+                            <div id="previewContent"></div>
+                        </div>
+                        
+                        <div class="form-row">
+                            <div class="form-group">
+                                <button type="submit" class="btn btn-success">
+                                    <i class="fas fa-save"></i> Add Client & Calculate Commission
+                                </button>
+                            </div>
+                            <div class="form-group">
+                                <button type="button" class="btn btn-primary" onclick="saveAsDraft()">
+                                    <i class="fas fa-file-alt"></i> Save as Draft
+                                </button>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+            
+            <!-- Clients Tab -->
+            <div id="clientsTab" class="tab-content">
+                <div class="content-card">
+                    <h2 class="card-title">
+                        <i class="fas fa-user-tie"></i> All Clients
+                        <div class="card-title-actions">
+                            <button type="button" class="btn btn-sm btn-primary" onclick="exportClients()">
+                                <i class="fas fa-download"></i> Export
+                            </button>
+                            <button type="button" class="btn btn-sm btn-success" onclick="showAddClientModal()">
+                                <i class="fas fa-plus"></i> Add Client
+                            </button>
+                        </div>
+                    </h2>
+                    
+                    <div class="search-filter">
+                        <div class="search-box">
+                            <input type="text" id="clientSearch" class="form-control" placeholder="Search clients..." oninput="filterClients()">
+                        </div>
+                        <div class="filter-box">
+                            <select id="clientStatusFilter" class="form-control" onchange="filterClients()">
+                                <option value="">All Status</option>
+                                <option value="active">Active</option>
+                                <option value="pending">Pending</option>
+                                <option value="completed">Completed</option>
+                                <option value="cancelled">Cancelled</option>
+                            </select>
+                        </div>
+                        <div class="filter-box">
+                            <select id="clientCAEFilter" class="form-control" onchange="filterClients()">
+                                <option value="">All CAEs</option>
+                                <option value="CAE-001">CAE-001 - John Doe</option>
+                                <option value="CAE-002">CAE-002 - Jane Smith</option>
+                                <option value="CAE-003">CAE-003 - Robert Johnson</option>
+                            </select>
+                        </div>
+                        <div class="filter-box">
+                            <input type="month" id="clientMonthFilter" class="form-control" onchange="filterClients()">
+                        </div>
+                    </div>
+                    
+                    <table class="data-table">
+                        <thead>
+                            <tr>
+                                <th>Date</th>
+                                <th>Client</th>
+                                <th>CAE</th>
+                                <th>Project Value</th>
+                                <th>Commission</th>
+                                <th>Status</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="clientsTableBody">
+                            <tr>
+                                <td>2024-03-15</td>
+                                <td><strong>ABC Corporation</strong><br><small>ABC Corporation Ltd</small></td>
+                                <td>John Doe<br><small>CAE-001</small></td>
+                                <td>LKR 100,000</td>
+                                <td><strong class="text-success">LKR 40,000</strong></td>
+                                <td><span class="status-badge status-completed">Completed</span></td>
+                                <td>
+                                    <button type="button" class="btn btn-sm btn-info">
+                                        <i class="fas fa-eye"></i>
+                                    </button>
+                                    <button type="button" class="btn btn-sm btn-warning">
+                                        <i class="fas fa-edit"></i>
+                                    </button>
+                                    <button type="button" class="btn btn-sm btn-danger">
+                                        <i class="fas fa-trash"></i>
+                                    </button>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>2024-03-18</td>
+                                <td><strong>XYZ Ltd</strong><br><small>XYZ Limited</small></td>
+                                <td>Jane Smith<br><small>CAE-002</small></td>
+                                <td>LKR 75,000</td>
+                                <td><strong class="text-success">LKR 30,000</strong></td>
+                                <td><span class="status-badge status-completed">Completed</span></td>
+                                <td>
+                                    <button type="button" class="btn btn-sm btn-info">
+                                        <i class="fas fa-eye"></i>
+                                    </button>
+                                    <button type="button" class="btn btn-sm btn-warning">
+                                        <i class="fas fa-edit"></i>
+                                    </button>
+                                    <button type="button" class="btn btn-sm btn-danger">
+                                        <i class="fas fa-trash"></i>
+                                    </button>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>2024-03-20</td>
+                                <td><strong>Global Solutions</strong><br><small>Global Solutions Inc</small></td>
+                                <td>John Doe<br><small>CAE-001</small></td>
+                                <td>LKR 150,000</td>
+                                <td><strong class="text-success">LKR 60,000</strong></td>
+                                <td><span class="status-badge status-completed">Completed</span></td>
+                                <td>
+                                    <button type="button" class="btn btn-sm btn-info">
+                                        <i class="fas fa-eye"></i>
+                                    </button>
+                                    <button type="button" class="btn btn-sm btn-warning">
+                                        <i class="fas fa-edit"></i>
+                                    </button>
+                                    <button type="button" class="btn btn-sm btn-danger">
+                                        <i class="fas fa-trash"></i>
+                                    </button>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                    
+                    <div id="clientsPagination" class="pagination" style="margin-top: 20px; display: flex; justify-content: center; gap: 10px;">
+                        <button type="button" class="btn btn-sm btn-primary">1</button>
+                        <button type="button" class="btn btn-sm btn-outline-primary">2</button>
+                        <button type="button" class="btn btn-sm btn-outline-primary">3</button>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Reports Tab -->
+            <div id="reportsTab" class="tab-content">
+                <div class="content-card">
+                    <h2 class="card-title"><i class="fas fa-chart-bar"></i> Commission Reports</h2>
+                    
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label class="form-label">Select Month</label>
+                            <input type="month" id="reportMonth" class="form-control" value="2024-03">
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Select CAE</label>
+                            <select id="reportCae" class="form-control">
+                                <option value="">All CAEs</option>
+                                <option value="CAE-001">CAE-001 - John Doe</option>
+                                <option value="CAE-002">CAE-002 - Jane Smith</option>
+                                <option value="CAE-003">CAE-003 - Robert Johnson</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Report Type</label>
+                            <select id="reportType" class="form-control">
+                                <option value="summary">Summary Report</option>
+                                <option value="detailed">Detailed Report</option>
+                                <option value="comparison">Comparison Report</option>
+                            </select>
+                        </div>
+                    </div>
+                    
+                    <div class="form-row">
+                        <div class="form-group">
+                            <button type="button" class="btn btn-primary" onclick="generateReport()" style="margin-bottom: 20px;">
+                                <i class="fas fa-chart-bar"></i> Generate Report
+                            </button>
+                            <button type="button" class="btn btn-success" onclick="exportReport()">
+                                <i class="fas fa-file-excel"></i> Export as Excel
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <div id="reportResults">
+                        <div class="alert alert-info">
+                            <h4><i class="fas fa-info-circle"></i> Report Information</h4>
+                            <p>Select filters and click "Generate Report" to view commission breakdown</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- ===== CAE DASHBOARD ===== -->
+    <div id="caeDashboard" class="dashboard">
+        <!-- CAE Header -->
+        <header class="header">
+            <div class="header-left">
+                <h1><i class="fas fa-user-tie"></i> CAE Dashboard</h1>
+                <p id="caeWelcome">Welcome, CAE!</p>
+            </div>
+            <div class="header-right">
+                <div class="user-info">
+                    <div class="user-avatar" id="caeAvatar">C</div>
+                    <div>
+                        <strong id="caeNameDisplay">CAE</strong>
+                        <p id="caeNumberDisplay">CAE-000</p>
+                    </div>
+                </div>
+                <button type="button" class="logout-btn" onclick="logout()">
+                    <i class="fas fa-sign-out-alt"></i> Logout
+                </button>
+            </div>
+        </header>
+        
+        <!-- CAE Main Content -->
+        <div class="main-content">
+            <!-- CAE Tabs -->
+            <div class="tabs">
+                <button type="button" class="tab active" onclick="caeShowTab('overview')">My Dashboard</button>
+                <button type="button" class="tab" onclick="caeShowTab('add-client')">Add Client</button>
+                <button type="button" class="tab" onclick="caeShowTab('my-clients')">My Clients</button>
+                <button type="button" class="tab" onclick="caeShowTab('commissions')">My Commissions</button>
+                <button type="button" class="tab" onclick="caeShowTab('targets')">My Targets</button>
+            </div>
+            
+            <!-- CAE Overview Tab -->
+            <div id="caeOverviewTab" class="tab-content active">
+                <div class="content-card">
+                    <h2 class="card-title"><i class="fas fa-user-circle"></i> My Performance</h2>
+                    
+                    <div class="stats-grid">
+                        <div class="stat-card">
+                            <div class="stat-icon projects">
+                                <i class="fas fa-calendar-alt"></i>
+                            </div>
+                            <div class="stat-value" id="caeMonthProjects">8</div>
+                            <div class="stat-label">This Month's Projects</div>
+                            <div style="margin-top: 10px;">
+                                <span class="allowance-badge">
+                                    <i class="fas fa-gift"></i> Allowance Earned!
+                                </span>
+                            </div>
+                        </div>
+                        
+                        <div class="stat-card">
+                            <div class="stat-icon commission">
+                                <i class="fas fa-money-bill-wave"></i>
+                            </div>
+                            <div class="stat-value" id="caeMonthCommission">LKR 125,000</div>
+                            <div class="stat-label">This Month's Commission</div>
+                            <div style="font-size: 0.85rem; color: var(--success); margin-top: 10px;">
+                                <span id="caeCommissionRate">40%</span> fixed rate
+                            </div>
+                        </div>
+                        
+                        <div class="stat-card">
+                            <div class="stat-icon clients">
+                                <i class="fas fa-users"></i>
+                            </div>
+                            <div class="stat-value" id="caeTotalClients">24</div>
+                            <div class="stat-label">Total Clients</div>
+                        </div>
+                        
+                        <div class="stat-card">
+                            <div class="stat-icon allowance">
+                                <i class="fas fa-gift"></i>
+                            </div>
+                            <div class="stat-value" id="caeTotalCommission">LKR 350,000</div>
+                            <div class="stat-label">Total Commission</div>
+                        </div>
+                    </div>
+                    
+                    <div style="margin-top: 30px; padding: 20px; background: #f8fafc; border-radius: 10px;">
+                        <h3 style="margin-bottom: 15px;">Monthly Target Progress</h3>
+                        <div style="display: flex; align-items: center; gap: 15px;">
+                            <div style="flex: 1;">
+                                <div style="display: flex; justify-content: space-between; margin-bottom: 5px;">
+                                    <span>Projects Target: 5</span>
+                                    <span id="caeTargetProgress">8/5</span>
+                                </div>
+                                <div style="width: 100%; background: #e2e8f0; height: 10px; border-radius: 5px; overflow: hidden;">
+                                    <div id="caeTargetBar" style="width: 160%; background: var(--success); height: 100%;"></div>
+                                </div>
+                            </div>
+                            <div style="font-size: 0.9rem; color: var(--success);">
+                                <i class="fas fa-check-circle"></i> Target Achieved
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="content-card">
+                    <h2 class="card-title"><i class="fas fa-history"></i> Recent Activity</h2>
+                    <table class="data-table">
+                        <thead>
+                            <tr>
+                                <th>Date</th>
+                                <th>Client</th>
+                                <th>Project Value</th>
+                                <th>Commission</th>
+                                <th>Status</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>2024-03-20</td>
+                                <td><strong>Global Solutions</strong></td>
+                                <td>LKR 150,000</td>
+                                <td><strong class="text-success">LKR 60,000</strong></td>
+                                <td><span class="status-badge status-completed">Completed</span></td>
+                            </tr>
+                            <tr>
+                                <td>2024-03-18</td>
+                                <td><strong>ABC Corporation</strong></td>
+                                <td>LKR 100,000</td>
+                                <td><strong class="text-success">LKR 40,000</strong></td>
+                                <td><span class="status-badge status-completed">Completed</span></td>
+                            </tr>
+                            <tr>
+                                <td>2024-03-15</td>
+                                <td><strong>Tech Innovators</strong></td>
+                                <td>LKR 75,000</td>
+                                <td><strong class="text-success">LKR 30,000</strong></td>
+                                <td><span class="status-badge status-completed">Completed</span></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            
+            <!-- CAE Add Client Tab -->
+            <div id="caeAddClientTab" class="tab-content">
+                <div class="content-card">
+                    <h2 class="card-title">
+                        <i class="fas fa-user-plus"></i> Add New Client
+                        <div class="card-title-actions">
+                            <button type="button" class="btn btn-sm btn-info" onclick="loadClientTemplates()">
+                                <i class="fas fa-file-alt"></i> Templates
+                            </button>
+                        </div>
+                    </h2>
+                    
+                    <div id="caeAddClientResult"></div>
+                    
+                    <form id="caeAddClientForm" onsubmit="return caeAddClient(event)">
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label class="form-label">Date *</label>
+                                <input type="date" id="caeClientDate" class="form-control" required value="">
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">CAE Number</label>
+                                <input type="text" id="caeNumberField" class="form-control" readonly style="background: #f1f5f9;">
+                            </div>
+                        </div>
+                        
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label class="form-label">Client Name *</label>
+                                <input type="text" id="caeClientName" class="form-control" required placeholder="Enter client name">
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">Client Email</label>
+                                <input type="email" id="caeClientEmail" class="form-control" placeholder="Enter client email">
+                            </div>
+                        </div>
+                        
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label class="form-label">Client Phone</label>
+                                <input type="tel" id="caeClientPhone" class="form-control" placeholder="Enter client phone">
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">Client Company</label>
+                                <input type="text" id="caeClientCompany" class="form-control" placeholder="Enter company name">
+                            </div>
+                        </div>
+                        
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label class="form-label">Project Value (LKR) *</label>
+                                <input type="number" id="caeProjectValue" class="form-control" required placeholder="Enter project value" min="0" step="0.01" oninput="caeUpdateCommissionPreview()">
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">Project Status</label>
+                                <select id="caeProjectStatus" class="form-control">
+                                    <option value="active">Active</option>
+                                    <option value="pending">Pending</option>
+                                    <option value="completed" selected>Completed</option>
+                                    <option value="cancelled">Cancelled</option>
+                                </select>
+                            </div>
+                        </div>
+                        
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label class="form-label">Project Type</label>
+                                <select id="caeProjectType" class="form-control">
+                                    <option value="consulting">Consulting</option>
+                                    <option value="development">Development</option>
+                                    <option value="maintenance">Maintenance</option>
+                                    <option value="training">Training</option>
+                                    <option value="other">Other</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">Project Duration (Days)</label>
+                                <input type="number" id="caeProjectDuration" class="form-control" placeholder="Duration in days" min="1">
+                            </div>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label class="form-label">Project Description *</label>
+                            <textarea id="caeProjectDesc" class="form-control" rows="4" required placeholder="Detailed description of the project"></textarea>
+                        </div>
+                        
+                        <div id="caeCommissionPreview" class="alert alert-success" style="display: none;">
+                            <h4><i class="fas fa-calculator"></i> Commission Preview</h4>
+                            <div id="caePreviewContent"></div>
+                        </div>
+                        
+                        <div class="form-row">
+                            <div class="form-group">
+                                <button type="submit" class="btn btn-success">
+                                    <i class="fas fa-save"></i> Add Client & Calculate Commission
+                                </button>
+                            </div>
+                            <div class="form-group">
+                                <button type="button" class="btn btn-primary" onclick="caeSaveAsDraft()">
+                                    <i class="fas fa-file-alt"></i> Save as Draft
+                                </button>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+            
+            <!-- CAE My Clients Tab -->
+            <div id="caeMyClientsTab" class="tab-content">
+                <div class="content-card">
+                    <h2 class="card-title">
+                        <i class="fas fa-users"></i> My Clients
+                        <div class="card-title-actions">
+                            <button type="button" class="btn btn-sm btn-primary" onclick="caeExportClients()">
+                                <i class="fas fa-download"></i> Export
+                            </button>
+                        </div>
+                    </h2>
+                    
+                    <div class="search-filter">
+                        <div class="search-box">
+                            <input type="text" id="caeClientSearch" class="form-control" placeholder="Search my clients..." oninput="caeFilterClients()">
+                        </div>
+                        <div class="filter-box">
+                            <select id="caeClientStatusFilter" class="form-control" onchange="caeFilterClients()">
+                                <option value="">All Status</option>
+                                <option value="active">Active</option>
+                                <option value="pending">Pending</option>
+                                <option value="completed">Completed</option>
+                                <option value="cancelled">Cancelled</option>
+                            </select>
+                        </div>
+                        <div class="filter-box">
+                            <input type="month" id="caeClientMonthFilter" class="form-control" onchange="caeFilterClients()">
+                        </div>
+                    </div>
+                    
+                    <table class="data-table">
+                        <thead>
+                            <tr>
+                                <th>Date</th>
+                                <th>Client Name</th>
+                                <th>Project Value</th>
+                                <th>Commission</th>
+                                <th>Status</th>
+                                <th>Type</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="caeClientsTableBody">
+                            <tr>
+                                <td>2024-03-20</td>
+                                <td><strong>Global Solutions</strong><br><small>Global Solutions Inc</small></td>
+                                <td>LKR 150,000</td>
+                                <td><strong class="text-success">LKR 60,000</strong></td>
+                                <td><span class="status-badge status-completed">Completed</span></td>
+                                <td>Consulting</td>
+                                <td>
+                                    <button type="button" class="btn btn-sm btn-info">
+                                        <i class="fas fa-eye"></i>
+                                    </button>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>2024-03-18</td>
+                                <td><strong>ABC Corporation</strong><br><small>ABC Corporation Ltd</small></td>
+                                <td>LKR 100,000</td>
+                                <td><strong class="text-success">LKR 40,000</strong></td>
+                                <td><span class="status-badge status-completed">Completed</span></td>
+                                <td>Development</td>
+                                <td>
+                                    <button type="button" class="btn btn-sm btn-info">
+                                        <i class="fas fa-eye"></i>
+                                    </button>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>2024-03-15</td>
+                                <td><strong>Tech Innovators</strong><br><small>Tech Innovators Pvt Ltd</small></td>
+                                <td>LKR 75,000</td>
+                                <td><strong class="text-success">LKR 30,000</strong></td>
+                                <td><span class="status-badge status-active">Active</span></td>
+                                <td>Development</td>
+                                <td>
+                                    <button type="button" class="btn btn-sm btn-info">
+                                        <i class="fas fa-eye"></i>
+                                    </button>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                    
+                    <div id="caeClientsPagination" class="pagination" style="margin-top: 20px; display: flex; justify-content: center; gap: 10px;">
+                        <button type="button" class="btn btn-sm btn-primary">1</button>
+                        <button type="button" class="btn btn-sm btn-outline-primary">2</button>
+                        <button type="button" class="btn btn-sm btn-outline-primary">3</button>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- CAE Commissions Tab -->
+            <div id="caeCommissionsTab" class="tab-content">
+                <div class="content-card">
+                    <h2 class="card-title"><i class="fas fa-money-bill-wave"></i> My Commissions</h2>
+                    
+                    <div style="background: #f0f9ff; padding: 25px; border-radius: 12px; margin-bottom: 30px;">
+                        <h3 style="margin-bottom: 15px;">Commission Summary</h3>
+                        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 20px;">
+                            <div>
+                                <div style="font-size: 0.9rem; color: var(--gray);">Total Commission</div>
+                                <div style="font-size: 2rem; font-weight: 700; color: var(--success);">LKR 350,000</div>
+                            </div>
+                            <div>
+                                <div style="font-size: 0.9rem; color: var(--gray);">This Month</div>
+                                <div style="font-size: 2rem; font-weight: 700; color: var(--primary);">LKR 125,000</div>
+                            </div>
+                            <div>
+                                <div style="font-size: 0.9rem; color: var(--gray);">Allowances</div>
+                                <div style="font-size: 2rem; font-weight: 700; color: var(--warning);">LKR 10,000</div>
+                            </div>
+                            <div>
+                                <div style="font-size: 0.9rem; color: var(--gray);">Pending</div>
+                                <div style="font-size: 2rem; font-weight: 700; color: var(--danger);">LKR 25,000</div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="content-card">
+                        <h3 style="margin-bottom: 20px;">Monthly Breakdown</h3>
+                        <table class="data-table">
+                            <thead>
+                                <tr>
+                                    <th>Month</th>
+                                    <th>Projects</th>
+                                    <th>Commission</th>
+                                    <th>Allowance</th>
+                                    <th>Total</th>
+                                    <th>Status</th>
+                                </tr>
+                            </thead>
+                            <tbody id="caeCommissionTableBody">
+                                <tr>
+                                    <td><strong>March 2024</strong></td>
+                                    <td>8</td>
+                                    <td>LKR 125,000</td>
+                                    <td><span class="allowance-badge">LKR 5,000</span></td>
+                                    <td><strong>LKR 130,000</strong></td>
+                                    <td><span class="status-badge status-active">Bonus Earned</span></td>
+                                </tr>
+                                <tr>
+                                    <td><strong>February 2024</strong></td>
+                                    <td>5</td>
+                                    <td>LKR 75,000</td>
+                                    <td><span class="allowance-badge">LKR 5,000</span></td>
+                                    <td><strong>LKR 80,000</strong></td>
+                                    <td><span class="status-badge status-active">Bonus Earned</span></td>
+                                </tr>
+                                <tr>
+                                    <td><strong>January 2024</strong></td>
+                                    <td>4</td>
+                                    <td>LKR 60,000</td>
+                                    <td>-</td>
+                                    <td><strong>LKR 60,000</strong></td>
+                                    <td><span class="status-badge status-pending">In Progress</span></td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- CAE Targets Tab -->
+            <div id="caeTargetsTab" class="tab-content">
+                <div class="content-card">
+                    <h2 class="card-title"><i class="fas fa-bullseye"></i> My Targets</h2>
+                    
+                    <div style="background: linear-gradient(135deg, var(--primary), var(--secondary)); color: white; padding: 25px; border-radius: 12px; margin-bottom: 30px;">
+                        <h3 style="margin-bottom: 10px;">Monthly Target</h3>
+                        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 20px;">
+                            <div>
+                                <div style="font-size: 0.9rem; opacity: 0.9;">Target Projects</div>
+                                <div style="font-size: 2rem; font-weight: 700;">5</div>
+                            </div>
+                            <div>
+                                <div style="font-size: 0.9rem; opacity: 0.9;">Achieved</div>
+                                <div style="font-size: 2rem; font-weight: 700;" id="caeTargetAchieved">8</div>
+                            </div>
+                            <div>
+                                <div style="font-size: 0.9rem; opacity: 0.9;">Remaining</div>
+                                <div style="font-size: 2rem; font-weight: 700;" id="caeTargetRemaining">0</div>
+                            </div>
+                            <div>
+                                <div style="font-size: 0.9rem; opacity: 0.9;">Progress</div>
+                                <div style="font-size: 2rem; font-weight: 700;" id="caeTargetPercentage">160%</div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div style="margin-bottom: 30px;">
+                        <h3 style="margin-bottom: 15px;">Target Progress</h3>
+                        <div style="background: #f1f5f9; padding: 20px; border-radius: 10px;">
+                            <div style="display: flex; justify-content: space-between; margin-bottom: 10px;">
+                                <span>Project Completion</span>
+                                <span id="caeTargetProgressText">8/5 (160%)</span>
+                            </div>
+                            <div style="width: 100%; background: #e2e8f0; height: 20px; border-radius: 10px; overflow: hidden;">
+                                <div id="caeTargetProgressBar" style="width: 160%; background: linear-gradient(135deg, var(--success), #059669); height: 100%;"></div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div>
+                        <h3 style="margin-bottom: 15px;">Quarterly Performance</h3>
+                        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 20px;">
+                            <div style="background: white; padding: 20px; border-radius: 10px; box-shadow: 0 2px 8px rgba(0,0,0,0.1);">
+                                <h4>Q1 (Jan-Mar)</h4>
+                                <div style="font-size: 1.5rem; font-weight: 700; color: var(--success); margin: 10px 0;">15 Projects</div>
+                                <div style="color: var(--gray);">Commission: LKR 225,000</div>
+                            </div>
+                            <div style="background: white; padding: 20px; border-radius: 10px; box-shadow: 0 2px 8px rgba(0,0,0,0.1);">
+                                <h4>Q2 (Apr-Jun)</h4>
+                                <div style="font-size: 1.5rem; font-weight: 700; color: var(--primary); margin: 10px 0;">Current Quarter</div>
+                                <div style="color: var(--gray);">Target: 15 Projects</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Client Detail Modal -->
+    <div id="clientDetailModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title">Client Details</h3>
+                <button type="button" class="modal-close" onclick="closeModal()">&times;</button>
+            </div>
+            <div id="clientDetailContent">
+                <!-- Client details will be dynamically inserted -->
+            </div>
+        </div>
+    </div>
+
+    <!-- Add Client Modal -->
+    <div id="addClientModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title">Add New Client</h3>
+                <button type="button" class="modal-close" onclick="closeModal()">&times;</button>
+            </div>
+            <div id="addClientModalContent">
+                <!-- Add client form will be dynamically inserted -->
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // ===== DEMO DATA =====
+        const demoCAEs = [
+            { 
+                cae_no: 'CAE-001', 
+                name: 'John Doe', 
+                phone: '077-1234567', 
+                email: 'john@example.com', 
+                address: '123 Main St, Colombo',
+                join_date: '2024-01-15',
+                commission_rate: 40,
+                status: 'active'
+            },
+            { 
+                cae_no: 'CAE-002', 
+                name: 'Jane Smith', 
+                phone: '077-2345678', 
+                email: 'jane@example.com',
+                address: '456 Park Ave, Kandy',
+                join_date: '2024-01-20',
+                commission_rate: 40,
+                status: 'active'
+            },
+            { 
+                cae_no: 'CAE-003', 
+                name: 'Robert Johnson', 
+                phone: '077-3456789', 
+                email: 'robert@example.com',
+                address: '789 Beach Rd, Galle',
+                join_date: '2024-02-01',
+                commission_rate: 40,
+                status: 'active'
+            }
+        ];
+
+        let demoClients = [
+            { 
+                id: 1,
+                date: '2024-03-15', 
+                cae_no: 'CAE-001', 
+                client_name: 'ABC Corporation',
+                client_email: 'contact@abccorp.com',
+                client_phone: '011-1234567',
+                client_company: 'ABC Corporation Ltd',
+                project_value: 100000, 
+                commission: 40000, 
+                month: '2024-03', 
+                description: 'Software Development for inventory management',
+                status: 'completed',
+                type: 'development',
+                duration: 30
+            },
+            { 
+                id: 2,
+                date: '2024-03-18', 
+                cae_no: 'CAE-002', 
+                client_name: 'XYZ Ltd',
+                client_email: 'info@xyzltd.com',
+                client_phone: '011-2345678',
+                client_company: 'XYZ Limited',
+                project_value: 75000, 
+                commission: 30000, 
+                month: '2024-03', 
+                description: 'Marketing Campaign for new product launch',
+                status: 'completed',
+                type: 'consulting',
+                duration: 15
+            },
+            { 
+                id: 3,
+                date: '2024-03-20', 
+                cae_no: 'CAE-001', 
+                client_name: 'Global Solutions',
+                client_email: 'sales@globalsolutions.com',
+                client_phone: '011-3456789',
+                client_company: 'Global Solutions Inc',
+                project_value: 150000, 
+                commission: 60000, 
+                month: '2024-03', 
+                description: 'Consulting Project for business expansion',
+                status: 'completed',
+                type: 'consulting',
+                duration: 45
+            }
+        ];
+
+        let clientDrafts = [];
+        let currentPage = 1;
+        const itemsPerPage = 10;
+        let currentCAE = null;
+
+        // ===== UTILITY FUNCTIONS =====
+        function formatCurrency(amount) {
+            return 'LKR ' + amount.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+        }
+
+        function formatDate(dateString) {
+            const date = new Date(dateString);
+            return date.toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' });
+        }
+
+        function generateClientId() {
+            return Math.max(0, ...demoClients.map(c => c.id)) + 1;
+        }
+
+        // ===== LOGIN FUNCTIONS =====
+        function switchRole(role) {
+            // Update active tab
+            document.querySelectorAll('.role-tab').forEach(tab => {
+                tab.classList.remove('active');
+            });
+            
+            // Get clicked button
+            let clickedButton;
+            if (typeof event !== 'undefined') {
+                clickedButton = event.target;
+            } else {
+                clickedButton = document.querySelector('.role-tab[onclick*="' + role + '"]');
+            }
+            
+            if (clickedButton) {
+                clickedButton.classList.add('active');
+            }
+            
+            // Get form elements
+            const usernameInput = document.getElementById('username');
+            const passwordInput = document.getElementById('password');
+            const caeNumberInput = document.getElementById('caeNumber');
+            const usernameGroup = document.getElementById('usernameGroup');
+            const passwordGroup = document.getElementById('passwordGroup');
+            const caeNumberGroup = document.getElementById('caeNumberGroup');
+            
+            if (role === 'admin') {
+                // Show admin fields
+                usernameGroup.classList.remove('hidden');
+                passwordGroup.classList.remove('hidden');
+                caeNumberGroup.classList.add('hidden');
+                
+                // Set required attributes for admin
+                usernameInput.required = true;
+                passwordInput.required = true;
+                caeNumberInput.required = false;
+                
+                // Clear CAE number field
+                caeNumberInput.value = '';
+                
+                // Update label
+                document.getElementById('usernameLabel').textContent = 'Admin Username';
+                usernameInput.value = 'admin';
+            } else {
+                // Show CAE fields
+                usernameGroup.classList.add('hidden');
+                passwordGroup.classList.add('hidden');
+                caeNumberGroup.classList.remove('hidden');
+                
+                // Set required attributes for CAE
+                usernameInput.required = false;
+                passwordInput.required = false;
+                caeNumberInput.required = true;
+                
+                // Clear admin fields
+                usernameInput.value = '';
+                passwordInput.value = '';
+            }
+        }
+
+        function login(event) {
+            event.preventDefault();
+            
+            const activeRole = document.querySelector('.role-tab.active').textContent.trim();
+            const errorDiv = document.getElementById('loginError');
+            
+            errorDiv.classList.add('hidden');
+            
+            if (activeRole === 'Admin') {
+                // Admin login
+                const username = document.getElementById('username').value;
+                const password = document.getElementById('password').value;
+                
+                if (username === 'admin' && password === 'admin123') {
+                    showAdminDashboard();
+                } else {
+                    errorDiv.textContent = 'Invalid admin credentials! Use: admin / admin123';
+                    errorDiv.classList.remove('hidden');
+                }
+            } else {
+                // CAE login
+                const caeNumber = document.getElementById('caeNumber').value.trim().toUpperCase();
+                
+                if (!caeNumber) {
+                    errorDiv.textContent = 'Please enter your CAE number';
+                    errorDiv.classList.remove('hidden');
+                    return false;
+                }
+                
+                // Check if CAE exists
+                const cae = demoCAEs.find(c => c.cae_no === caeNumber);
+                
+                if (cae) {
+                    showCAEDashboard(cae);
+                } else {
+                    errorDiv.textContent = 'CAE number not found! Try: CAE-001, CAE-002, or CAE-003';
+                    errorDiv.classList.remove('hidden');
+                }
+            }
+            
+            return false;
+        }
+
+        function logout() {
+            document.getElementById('loginPage').style.display = 'flex';
+            document.getElementById('adminDashboard').style.display = 'none';
+            document.getElementById('caeDashboard').style.display = 'none';
+            
+            // Reset login form
+            document.getElementById('loginForm').reset();
+            switchRole('admin');
+            currentCAE = null;
+        }
+
+        function showAdminDashboard() {
+            document.getElementById('loginPage').style.display = 'none';
+            document.getElementById('adminDashboard').style.display = 'block';
+            document.getElementById('caeDashboard').style.display = 'none';
+            
+            // Update welcome message
+            const now = new Date();
+            const dateStr = now.toLocaleDateString('en-US', { 
+                weekday: 'long', 
+                year: 'numeric', 
+                month: 'long', 
+                day: 'numeric' 
+            });
+            document.getElementById('adminWelcome').innerHTML = 
+                `Welcome, Administrator! <span style="font-weight: normal; opacity: 0.8;">| ${dateStr}</span>`;
+            
+            // Update stats
+            updateAdminStats();
+        }
+
+        function showCAEDashboard(cae) {
+            document.getElementById('loginPage').style.display = 'none';
+            document.getElementById('adminDashboard').style.display = 'none';
+            document.getElementById('caeDashboard').style.display = 'block';
+            
+            // Set current CAE
+            currentCAE = cae;
+            
+            // Update CAE info
+            document.getElementById('caeAvatar').textContent = cae.name.charAt(0);
+            document.getElementById('caeNameDisplay').textContent = cae.name;
+            document.getElementById('caeNumberDisplay').textContent = cae.cae_no;
+            document.getElementById('caeNumberField').value = cae.cae_no;
+            document.getElementById('caeCommissionRate').textContent = cae.commission_rate + '%';
+            
+            // Update welcome message
+            const now = new Date();
+            const dateStr = now.toLocaleDateString('en-US', { 
+                weekday: 'long', 
+                year: 'numeric', 
+                month: 'long', 
+                day: 'numeric' 
+            });
+            document.getElementById('caeWelcome').innerHTML = 
+                `Welcome, ${cae.name}! <span style="font-weight: normal; opacity: 0.8;">| ${dateStr}</span>`;
+            
+            // Update CAE stats
+            updateCAEStats();
+        }
+
+        // ===== ADMIN FUNCTIONS =====
+        function showTab(tabName) {
+            // Update tab buttons
+            document.querySelectorAll('#adminDashboard .tab').forEach(tab => {
+                tab.classList.remove('active');
+            });
+            
+            // Add active class to clicked tab
+            let clickedButton;
+            if (typeof event !== 'undefined') {
+                clickedButton = event.target;
+            } else {
+                clickedButton = document.querySelector('#adminDashboard .tab[onclick*="' + tabName + '"]');
+            }
+            
+            if (clickedButton) {
+                clickedButton.classList.add('active');
+            }
+            
+            // Show tab content
+            document.querySelectorAll('#adminDashboard .tab-content').forEach(content => {
+                content.classList.remove('active');
+            });
+            
+            // Handle different tab name formats
+            let tabContentId;
+            if (tabName === 'add-cae') {
+                tabContentId = 'add-caeTab';
+            } else if (tabName === 'add-client') {
+                tabContentId = 'add-clientTab';
+            } else {
+                tabContentId = tabName + 'Tab';
+            }
+            
+            const tabContent = document.getElementById(tabContentId);
+            if (tabContent) {
+                tabContent.classList.add('active');
+            }
+        }
+
+        function updateAdminStats() {
+            const totalCAEs = demoCAEs.length;
+            const totalClients = demoClients.length;
+            
+            const currentMonth = new Date().toISOString().slice(0, 7);
+            const monthClients = demoClients.filter(c => c.month === currentMonth);
+            const monthProjects = monthClients.length;
+            
+            const totalCommission = demoClients.reduce((sum, client) => sum + client.commission, 0);
+            const totalRevenue = demoClients.reduce((sum, client) => sum + client.project_value, 0);
+            
+            // Check allowances
+            let totalAllowance = 0;
+            demoCAEs.forEach(cae => {
+                const caeMonthClients = demoClients.filter(c => c.cae_no === cae.cae_no && c.month === currentMonth && c.status === 'completed');
+                if (caeMonthClients.length >= 5) {
+                    totalAllowance += 5000;
+                }
+            });
+            
+            // Update DOM
+            document.getElementById('adminTotalCaes').textContent = totalCAEs;
+            document.getElementById('adminTotalClients').textContent = totalClients;
+            document.getElementById('adminTotalProjects').textContent = monthProjects;
+            document.getElementById('adminTotalCommission').textContent = formatCurrency(totalCommission);
+            document.getElementById('adminTotalAllowance').textContent = formatCurrency(totalAllowance);
+            document.getElementById('adminTotalRevenue').textContent = formatCurrency(totalRevenue);
+        }
+
+        function addCAE(event) {
+            event.preventDefault();
+            
+            const name = document.getElementById('caeName').value;
+            const phone = document.getElementById('caePhone').value;
+            const email = document.getElementById('caeEmail').value;
+            const address = document.getElementById('caeAddress').value;
+            const joinDate = document.getElementById('caeJoinDate').value;
+            const commissionRate = parseFloat(document.getElementById('caeCommissionRate').value);
+            
+            if (!name || !phone || !joinDate) {
+                alert('Please fill all required fields');
+                return false;
+            }
+            
+            // Generate new CAE number
+            const lastCAE = demoCAEs[demoCAEs.length - 1];
+            const lastNum = parseInt(lastCAE.cae_no.split('-')[1]);
+            const newNum = (lastNum + 1).toString().padStart(3, '0');
+            const caeNo = `CAE-${newNum}`;
+            
+            // Add to demo data
+            const newCAE = {
+                cae_no: caeNo,
+                name: name,
+                phone: phone,
+                email: email,
+                address: address,
+                join_date: joinDate,
+                commission_rate: commissionRate,
+                status: 'active'
+            };
+            
+            demoCAEs.push(newCAE);
+            
+            // Show success message
+            const resultDiv = document.getElementById('addCaeResult');
+            resultDiv.innerHTML = `
+                <div class="alert alert-success">
+                    <h4><i class="fas fa-check-circle"></i> CAE Added Successfully!</h4>
+                    <p><strong>CAE Number:</strong> ${caeNo}</p>
+                    <p><strong>Name:</strong> ${name}</p>
+                    <p><strong>Phone:</strong> ${phone}</p>
+                    <p><strong>Commission Rate:</strong> ${commissionRate}%</p>
+                    ${email ? `<p><strong>Email:</strong> ${email}</p>` : ''}
+                    ${address ? `<p><strong>Address:</strong> ${address}</p>` : ''}
+                </div>
+            `;
+            
+            // Reset form
+            document.getElementById('addCaeForm').reset();
+            const today = new Date().toISOString().split('T')[0];
+            document.getElementById('caeJoinDate').value = today;
+            document.getElementById('caeCommissionRate').value = 40;
+            
+            // Update UI
+            updateAdminStats();
+            
+            return false;
+        }
+
+        function addClient(event) {
+            event.preventDefault();
+            
+            const date = document.getElementById('clientDate').value;
+            const caeNo = document.getElementById('clientCae').value;
+            const clientName = document.getElementById('clientName').value;
+            const clientEmail = document.getElementById('clientEmail').value;
+            const clientPhone = document.getElementById('clientPhone').value;
+            const clientCompany = document.getElementById('clientCompany').value;
+            const projectValue = parseFloat(document.getElementById('projectValue').value);
+            const projectStatus = document.getElementById('projectStatus').value;
+            const projectType = document.getElementById('projectType').value;
+            const projectDuration = document.getElementById('projectDuration').value;
+            const description = document.getElementById('projectDesc').value;
+            
+            if (!date || !caeNo || !clientName || !projectValue || !description) {
+                alert('Please fill all required fields');
+                return false;
+            }
+            
+            const cae = demoCAEs.find(c => c.cae_no === caeNo);
+            if (!cae) {
+                alert('Invalid CAE selected');
+                return false;
+            }
+            
+            // Calculate commission based on CAE's commission rate
+            const commission = projectValue * (cae.commission_rate / 100);
+            const month = date.substring(0, 7);
+            
+            // Create new client
+            const newClient = {
+                id: generateClientId(),
+                date: date,
+                cae_no: caeNo,
+                client_name: clientName,
+                client_email: clientEmail,
+                client_phone: clientPhone,
+                client_company: clientCompany,
+                project_value: projectValue,
+                commission: commission,
+                month: month,
+                description: description,
+                status: projectStatus,
+                type: projectType,
+                duration: projectDuration ? parseInt(projectDuration) : null
+            };
+            
+            demoClients.push(newClient);
+            
+            // Check allowance eligibility
+            const monthClients = demoClients.filter(c => c.cae_no === caeNo && c.month === month && c.status === 'completed');
+            const allowanceEligible = monthClients.length >= 5;
+            
+            // Show success message
+            const resultDiv = document.getElementById('addClientResult');
+            let message = `
+                <div class="alert alert-success">
+                    <h4><i class="fas fa-check-circle"></i> Client Added Successfully!</h4>
+                    <p><strong>Client:</strong> ${clientName}</p>
+                    <p><strong>CAE:</strong> ${caeNo} - ${cae.name}</p>
+                    <p><strong>Project Value:</strong> ${formatCurrency(projectValue)}</p>
+                    <p><strong>Commission (${cae.commission_rate}%):</strong> <strong class="text-success">${formatCurrency(commission)}</strong></p>
+            `;
+            
+            if (allowanceEligible && projectStatus === 'completed') {
+                message += `<p class="allowance-badge"><i class="fas fa-gift"></i> Monthly Allowance Awarded: LKR 5,000</p>`;
+            } else if (projectStatus === 'completed') {
+                const remaining = 5 - monthClients.length;
+                if (remaining > 0) {
+                    message += `<p style="color: var(--warning); margin-top: 10px;">
+                        <i class="fas fa-info-circle"></i> Need ${remaining} more completed project(s) this month for allowance
+                    </p>`;
+                }
+            }
+            
+            message += '</div>';
+            resultDiv.innerHTML = message;
+            
+            // Reset form
+            document.getElementById('addClientForm').reset();
+            const today = new Date().toISOString().split('T')[0];
+            document.getElementById('clientDate').value = today;
+            document.getElementById('projectStatus').value = 'completed';
+            document.getElementById('projectType').value = 'consulting';
+            document.getElementById('commissionPreview').style.display = 'none';
+            
+            // Update UI
+            updateAdminStats();
+            
+            return false;
+        }
+
+        function updateCommissionPreview() {
+            const projectValue = parseFloat(document.getElementById('projectValue').value) || 0;
+            const caeNo = document.getElementById('clientCae').value;
+            const cae = demoCAEs.find(c => c.cae_no === caeNo);
+            
+            if (projectValue > 0 && cae) {
+                const commission = projectValue * (cae.commission_rate / 100);
+                const preview = document.getElementById('commissionPreview');
+                const content = document.getElementById('previewContent');
+                
+                if (preview && content) {
+                    content.innerHTML = `
+                        <p><strong>Project Value:</strong> ${formatCurrency(projectValue)}</p>
+                        <p><strong>Commission Rate:</strong> ${cae.commission_rate}%</p>
+                        <p><strong>Commission Amount:</strong> <strong class="text-success">${formatCurrency(commission)}</strong></p>
+                        <p><strong>CAE:</strong> ${cae.name} (${cae.cae_no})</p>
+                    `;
+                    preview.style.display = 'block';
+                }
+            } else {
+                const preview = document.getElementById('commissionPreview');
+                if (preview) {
+                    preview.style.display = 'none';
+                }
+            }
+        }
+
+        function updateCAECommissionRate() {
+            updateCommissionPreview();
+        }
+
+        function saveAsDraft() {
+            const date = document.getElementById('clientDate').value;
+            const caeNo = document.getElementById('clientCae').value;
+            const clientName = document.getElementById('clientName').value;
+            const projectValue = parseFloat(document.getElementById('projectValue').value) || 0;
+            const description = document.getElementById('projectDesc').value;
+            
+            if (!clientName) {
+                alert('Please at least enter client name');
+                return;
+            }
+            
+            const draft = {
+                date: date || new Date().toISOString().split('T')[0],
+                cae_no: caeNo,
+                client_name: clientName,
+                project_value: projectValue,
+                description: description,
+                saved_at: new Date().toISOString()
+            };
+            
+            clientDrafts.push(draft);
+            
+            const resultDiv = document.getElementById('addClientResult');
+            resultDiv.innerHTML = `
+                <div class="alert alert-info">
+                    <h4><i class="fas fa-save"></i> Draft Saved!</h4>
+                    <p>Client information saved as draft. You can continue later.</p>
+                    <p><strong>Saved Drafts:</strong> ${clientDrafts.length}</p>
+                </div>
+            `;
+            
+            // Clear form but keep basic info
+            document.getElementById('projectValue').value = '';
+            document.getElementById('projectDesc').value = '';
+            document.getElementById('commissionPreview').style.display = 'none';
+        }
+
+        function exportClients() {
+            alert('Export feature would generate an Excel/CSV file with all client data in a real application.');
+        }
+
+        function showAddClientModal() {
+            alert('Add Client modal would open here in a real application.');
+        }
+
+        function generateReport() {
+            const month = document.getElementById('reportMonth').value;
+            const caeNo = document.getElementById('reportCae').value;
+            const reportType = document.getElementById('reportType').value;
+            
+            if (!month) {
+                alert('Please select a month');
+                return;
+            }
+            
+            let filteredClients = demoClients.filter(c => c.month === month);
+            
+            if (caeNo) {
+                filteredClients = filteredClients.filter(c => c.cae_no === caeNo);
+            }
+            
+            if (filteredClients.length === 0) {
+                document.getElementById('reportResults').innerHTML = `
+                    <div class="alert alert-error">
+                        <i class="fas fa-info-circle"></i> No data found for selected filters
+                    </div>
+                `;
+                return;
+            }
+            
+            // Generate report HTML
+            let html = `
+                <div class="alert alert-success">
+                    <h4><i class="fas fa-chart-bar"></i> Report for ${month}</h4>
+                    <p><strong>Total Projects:</strong> ${filteredClients.length}</p>
+                    <p><strong>Total Commission:</strong> ${formatCurrency(filteredClients.reduce((sum, c) => sum + c.commission, 0))}</p>
+                </div>
+                
+                <table class="data-table">
+                    <thead>
+                        <tr>
+                            <th>Date</th>
+                            <th>Client</th>
+                            <th>CAE</th>
+                            <th>Project Value</th>
+                            <th>Commission</th>
+                            <th>Status</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+            `;
+            
+            filteredClients.forEach(client => {
+                const cae = demoCAEs.find(c => c.cae_no === client.cae_no);
+                const statusClass = `status-${client.status}`;
+                const statusText = client.status.charAt(0).toUpperCase() + client.status.slice(1);
+                
+                html += `
+                    <tr>
+                        <td>${formatDate(client.date)}</td>
+                        <td>${client.client_name}</td>
+                        <td>${cae ? cae.name : client.cae_no}<br><small>${client.cae_no}</small></td>
+                        <td>${formatCurrency(client.project_value)}</td>
+                        <td><strong class="text-success">${formatCurrency(client.commission)}</strong></td>
+                        <td><span class="status-badge ${statusClass}">${statusText}</span></td>
+                    </tr>
+                `;
+            });
+            
+            html += '</tbody></table>';
+            document.getElementById('reportResults').innerHTML = html;
+        }
+
+        function exportReport() {
+            alert('Report export feature would generate an Excel file with the current report data in a real application.');
+        }
+
+        // ===== CAE FUNCTIONS =====
+        function caeShowTab(tabName) {
+            // Update tab buttons
+            document.querySelectorAll('#caeDashboard .tab').forEach(tab => {
+                tab.classList.remove('active');
+            });
+            
+            // Add active class to clicked tab
+            let clickedButton;
+            if (typeof event !== 'undefined') {
+                clickedButton = event.target;
+            } else {
+                clickedButton = document.querySelector('#caeDashboard .tab[onclick*="' + tabName + '"]');
+            }
+            
+            if (clickedButton) {
+                clickedButton.classList.add('active');
+            }
+            
+            // Show tab content
+            document.querySelectorAll('#caeDashboard .tab-content').forEach(content => {
+                content.classList.remove('active');
+            });
+            
+            // Handle different tab name formats
+            let tabContentId;
+            if (tabName === 'add-client') {
+                tabContentId = 'caeAddClientTab';
+            } else if (tabName === 'my-clients') {
+                tabContentId = 'caeMyClientsTab';
+            } else if (tabName === 'commissions') {
+                tabContentId = 'caeCommissionsTab';
+            } else if (tabName === 'targets') {
+                tabContentId = 'caeTargetsTab';
+            } else {
+                tabContentId = 'cae' + tabName.charAt(0).toUpperCase() + tabName.slice(1) + 'Tab';
+            }
+            
+            const tabContent = document.getElementById(tabContentId);
+            if (tabContent) {
+                tabContent.classList.add('active');
+            }
+        }
+
+        function updateCAEStats() {
+            if (!currentCAE) return;
+            
+            const caeClients = demoClients.filter(c => c.cae_no === currentCAE.cae_no);
+            const currentMonth = new Date().toISOString().slice(0, 7);
+            const monthClients = caeClients.filter(c => c.month === currentMonth);
+            const monthProjects = monthClients.length;
+            const monthCommission = monthClients.reduce((sum, client) => sum + client.commission, 0);
+            const totalClients = caeClients.length;
+            const totalCommission = caeClients.reduce((sum, client) => sum + client.commission, 0);
+            
+            // Update DOM
+            document.getElementById('caeMonthProjects').textContent = monthProjects;
+            document.getElementById('caeMonthCommission').textContent = formatCurrency(monthCommission);
+            document.getElementById('caeTotalClients').textContent = totalClients;
+            document.getElementById('caeTotalCommission').textContent = formatCurrency(totalCommission);
+            
+            // Update commission rate
+            document.getElementById('caeCommissionRate').textContent = currentCAE.commission_rate + '%';
+            
+            // Update target progress
+            const targetProjects = 5;
+            const achieved = monthProjects;
+            const remaining = Math.max(0, targetProjects - achieved);
+            const percentage = Math.min(100, (achieved / targetProjects) * 100);
+            
+            document.getElementById('caeTargetProgress').textContent = `${achieved}/${targetProjects}`;
+            document.getElementById('caeTargetBar').style.width = percentage + '%';
+            
+            // Update targets tab
+            document.getElementById('caeTargetAchieved').textContent = achieved;
+            document.getElementById('caeTargetRemaining').textContent = remaining;
+            document.getElementById('caeTargetPercentage').textContent = Math.round(percentage) + '%';
+            document.getElementById('caeTargetProgressText').textContent = `${achieved}/${targetProjects} (${Math.round(percentage)}%)`;
+            document.getElementById('caeTargetProgressBar').style.width = percentage + '%';
+        }
+
+        function caeAddClient(event) {
+            event.preventDefault();
+            
+            if (!currentCAE) {
+                alert('Session error. Please login again.');
+                logout();
+                return false;
+            }
+            
+            const date = document.getElementById('caeClientDate').value;
+            const clientName = document.getElementById('caeClientName').value;
+            const clientEmail = document.getElementById('caeClientEmail').value;
+            const clientPhone = document.getElementById('caeClientPhone').value;
+            const clientCompany = document.getElementById('caeClientCompany').value;
+            const projectValue = parseFloat(document.getElementById('caeProjectValue').value);
+            const projectStatus = document.getElementById('caeProjectStatus').value;
+            const projectType = document.getElementById('caeProjectType').value;
+            const projectDuration = document.getElementById('caeProjectDuration').value;
+            const description = document.getElementById('caeProjectDesc').value;
+            const caeNo = currentCAE.cae_no;
+            
+            if (!date || !clientName || !projectValue || !description) {
+                alert('Please fill all required fields');
+                return false;
+            }
+            
+            // Calculate commission based on CAE's commission rate
+            const commission = projectValue * (currentCAE.commission_rate / 100);
+            const month = date.substring(0, 7);
+            
+            // Create new client
+            const newClient = {
+                id: generateClientId(),
+                date: date,
+                cae_no: caeNo,
+                client_name: clientName,
+                client_email: clientEmail,
+                client_phone: clientPhone,
+                client_company: clientCompany,
+                project_value: projectValue,
+                commission: commission,
+                month: month,
+                description: description,
+                status: projectStatus,
+                type: projectType,
+                duration: projectDuration ? parseInt(projectDuration) : null
+            };
+            
+            demoClients.push(newClient);
+            
+            // Check allowance eligibility
+            const monthClients = demoClients.filter(c => c.cae_no === caeNo && c.month === month && c.status === 'completed');
+            const allowanceEligible = monthClients.length >= 5;
+            
+            // Show success message
+            const resultDiv = document.getElementById('caeAddClientResult');
+            let message = `
+                <div class="alert alert-success">
+                    <h4><i class="fas fa-check-circle"></i> Client Added Successfully!</h4>
+                    <p><strong>Client:</strong> ${clientName}</p>
+                    <p><strong>Project Value:</strong> ${formatCurrency(projectValue)}</p>
+                    <p><strong>Your Commission (${currentCAE.commission_rate}%):</strong> <strong class="text-success">${formatCurrency(commission)}</strong></p>
+            `;
+            
+            if (allowanceEligible && projectStatus === 'completed') {
+                message += `<p class="allowance-badge"><i class="fas fa-gift"></i> Monthly Allowance Awarded: LKR 5,000</p>`;
+            } else if (projectStatus === 'completed') {
+                const remaining = 5 - monthClients.length;
+                if (remaining > 0) {
+                    message += `<p style="color: var(--warning); margin-top: 10px;">
+                        <i class="fas fa-info-circle"></i> You need ${remaining} more completed project(s) this month to earn allowance
+                    </p>`;
+                }
+            }
+            
+            message += '</div>';
+            resultDiv.innerHTML = message;
+            
+            // Reset form
+            document.getElementById('caeAddClientForm').reset();
+            const today = new Date().toISOString().split('T')[0];
+            document.getElementById('caeClientDate').value = today;
+            document.getElementById('caeNumberField').value = caeNo;
+            document.getElementById('caeProjectStatus').value = 'completed';
+            document.getElementById('caeProjectType').value = 'consulting';
+            document.getElementById('caeCommissionPreview').style.display = 'none';
+            
+            // Update dashboard stats
+            updateCAEStats();
+            
+            return false;
+        }
+
+        function caeUpdateCommissionPreview() {
+            const projectValue = parseFloat(document.getElementById('caeProjectValue').value) || 0;
+            
+            if (projectValue > 0 && currentCAE) {
+                const commission = projectValue * (currentCAE.commission_rate / 100);
+                const preview = document.getElementById('caeCommissionPreview');
+                const content = document.getElementById('caePreviewContent');
+                
+                if (preview && content) {
+                    content.innerHTML = `
+                        <p><strong>Project Value:</strong> ${formatCurrency(projectValue)}</p>
+                        <p><strong>Commission Rate:</strong> ${currentCAE.commission_rate}%</p>
+                        <p><strong>Your Commission:</strong> <strong class="text-success">${formatCurrency(commission)}</strong></p>
+                    `;
+                    preview.style.display = 'block';
+                }
+            } else {
+                const preview = document.getElementById('caeCommissionPreview');
+                if (preview) {
+                    preview.style.display = 'none';
+                }
+            }
+        }
+
+        function caeSaveAsDraft() {
+            if (!currentCAE) return;
+            
+            const date = document.getElementById('caeClientDate').value;
+            const clientName = document.getElementById('caeClientName').value;
+            const projectValue = parseFloat(document.getElementById('caeProjectValue').value) || 0;
+            const description = document.getElementById('caeProjectDesc').value;
+            
+            if (!clientName) {
+                alert('Please at least enter client name');
+                return;
+            }
+            
+            const draft = {
+                date: date || new Date().toISOString().split('T')[0],
+                cae_no: currentCAE.cae_no,
+                client_name: clientName,
+                project_value: projectValue,
+                description: description,
+                saved_at: new Date().toISOString()
+            };
+            
+            clientDrafts.push(draft);
+            
+            const resultDiv = document.getElementById('caeAddClientResult');
+            resultDiv.innerHTML = `
+                <div class="alert alert-info">
+                    <h4><i class="fas fa-save"></i> Draft Saved!</h4>
+                    <p>Client information saved as draft. You can continue later.</p>
+                    <p><strong>Your Saved Drafts:</strong> ${clientDrafts.filter(d => d.cae_no === currentCAE.cae_no).length}</p>
+                </div>
+            `;
+            
+            // Clear form but keep basic info
+            document.getElementById('caeProjectValue').value = '';
+            document.getElementById('caeProjectDesc').value = '';
+            document.getElementById('caeCommissionPreview').style.display = 'none';
+        }
+
+        function caeFilterClients() {
+            alert('Filter feature would filter the client table in a real application.');
+        }
+
+        function caeExportClients() {
+            if (!currentCAE) return;
+            
+            const caeClients = demoClients.filter(c => c.cae_no === currentCAE.cae_no);
+            alert(`Export feature would generate an Excel file with your ${caeClients.length} clients in a real application.`);
+        }
+
+        function loadClientTemplates() {
+            alert('Client templates feature would load predefined client/project templates in a real application.');
+        }
+
+        function closeModal() {
+            document.querySelectorAll('.modal').forEach(modal => {
+                modal.classList.remove('active');
+            });
+        }
+
+        // ===== INITIALIZATION =====
+        document.addEventListener('DOMContentLoaded', function() {
+            // Set default date to today
+            const today = new Date().toISOString().split('T')[0];
+            const currentMonth = new Date().toISOString().slice(0, 7);
+            
+            // Set dates in forms
+            const clientDateEl = document.getElementById('clientDate');
+            const caeClientDateEl = document.getElementById('caeClientDate');
+            const caeJoinDateEl = document.getElementById('caeJoinDate');
+            
+            if (clientDateEl) clientDateEl.value = today;
+            if (caeClientDateEl) caeClientDateEl.value = today;
+            if (caeJoinDateEl) caeJoinDateEl.value = today;
+            
+            // Set default months in filters
+            const reportMonthEl = document.getElementById('reportMonth');
+            if (reportMonthEl) reportMonthEl.value = currentMonth;
+            
+            // Initialize role tabs
+            switchRole('admin');
+            
+            // Add event listener to prevent form submission on Enter key for login form
+            const loginForm = document.getElementById('loginForm');
+            if (loginForm) {
+                loginForm.addEventListener('keypress', function(e) {
+                    if (e.key === 'Enter') {
+                        e.preventDefault();
+                    }
+                });
+            }
+        });
+    </script>
+</body>
+</html>
